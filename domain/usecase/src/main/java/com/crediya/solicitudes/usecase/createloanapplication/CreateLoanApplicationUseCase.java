@@ -21,6 +21,13 @@ public class CreateLoanApplicationUseCase {
     private final UserRepository userRepository;
 
     public Mono<LoanApplication> createNewLoanApplication(LoanApplication loanApplication) {
+
+        try {
+            LoanApplicationValidator.validateForCreation(loanApplication);
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+
         return validateUser(loanApplication.getUserId())
                 .then(validateLoanType(loanApplication.getLoanTypeId()))
                 .flatMap(isValid -> {

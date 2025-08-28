@@ -1,6 +1,7 @@
 package com.crediya.solicitudes.api;
 
 import com.crediya.solicitudes.dto.ErrorResponse;
+import com.crediya.solicitudes.usecase.exceptions.DomainValidationException;
 import com.crediya.solicitudes.usecase.exceptions.InvalidLoanTypeException;
 import com.crediya.solicitudes.usecase.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({InvalidLoanTypeException.class, UserNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleBusinessExceptions(RuntimeException ex, ServerWebExchange exchange) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message(ex.getMessage())
+                .path(exchange.getRequest().getPath().value())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DomainValidationException.class)
+    public ResponseEntity<ErrorResponse> handleDomainValidation(DomainValidationException ex, ServerWebExchange exchange) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())

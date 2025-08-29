@@ -23,5 +23,5 @@ public class CreateLoanApplicationRequest {
 
     @NotNull(message = "El plazo no puede ser nulo.")
     @Positive(message = "El plazo debe ser un número positivo.")
-    private Integer term; // In months
+    private Integer term;
 }

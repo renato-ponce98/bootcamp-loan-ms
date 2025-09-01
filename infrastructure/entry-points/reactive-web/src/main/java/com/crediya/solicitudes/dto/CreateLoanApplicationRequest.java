@@ -1,17 +1,19 @@
 package com.crediya.solicitudes.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateLoanApplicationRequest {
-
-    @NotBlank(message = "El ID de usuario no puede estar vacío.")
-    private String userId;
 
     @NotNull(message = "El tipo de préstamo no puede ser nulo.")
     @Positive(message = "El ID del tipo de préstamo debe ser un número positivo.")

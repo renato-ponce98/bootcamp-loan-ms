@@ -47,6 +47,9 @@ adapter:
   restconsumer:
     timeout: 5000
     url: "http://localhost:8081"
+jwt:
+  secret: "EsteEsUnSecretoSuperLargoYComplejoParaCrediYaQueDebeSerCambiadoEnProduccion12345"
+  expiration-ms: 3600000
 resilience4j:
   circuitbreaker:
     instances:

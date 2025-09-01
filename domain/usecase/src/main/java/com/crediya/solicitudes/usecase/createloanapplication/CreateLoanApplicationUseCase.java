@@ -18,9 +18,10 @@ public class CreateLoanApplicationUseCase {
 
     private final LoanApplicationRepository loanApplicationRepository;
     private final LoanTypeRepository loanTypeRepository;
-    private final UserRepository userRepository;
 
-    public Mono<LoanApplication> createNewLoanApplication(LoanApplication loanApplication) {
+    public Mono<LoanApplication> createNewLoanApplication(LoanApplication loanApplication, String authenticatedUserId) {
+
+        loanApplication.setUserId(authenticatedUserId);
 
         try {
             LoanApplicationValidator.validateForCreation(loanApplication);
@@ -28,24 +29,13 @@ public class CreateLoanApplicationUseCase {
             return Mono.error(e);
         }
 
-        return validateUser(loanApplication.getUserId())
-                .then(validateLoanType(loanApplication.getLoanTypeId()))
+        return validateLoanType(loanApplication.getLoanTypeId())
                 .flatMap(isValid -> {
                     LoanApplication applicationToSave = loanApplication.toBuilder()
                             .statusId(PENDING_STATUS_ID)
                             .applicationDate(LocalDateTime.now())
                             .build();
                     return loanApplicationRepository.save(applicationToSave);
-                });
-    }
-
-    private Mono<Boolean> validateUser(String userId) {
-        return userRepository.existsById(userId)
-                .flatMap(exists -> {
-                    if (Boolean.FALSE.equals(exists)) {
-                        return Mono.error(new UserNotFoundException("El usuario con ID " + userId + " no existe."));
-                    }
-                    return Mono.just(true);
                 });
     }
 

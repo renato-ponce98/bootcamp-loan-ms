@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -30,6 +32,7 @@ public class LoanApplicationController {
 
     @PostMapping(path = "/solicitud")
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('CLIENTE')")
     @Operation(
             summary = "Registrar una nueva solicitud de préstamo",
             description = "Crea una nueva solicitud de préstamo para un usuario existente, validando la información proporcionada.",
@@ -48,14 +51,15 @@ public class LoanApplicationController {
     )
     public Mono<CreateLoanApplicationResponse> create(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Datos de la solicitud de préstamo a registrar", required = true, content = @Content(schema = @Schema(implementation = CreateLoanApplicationRequest.class)))
-            @Valid @RequestBody CreateLoanApplicationRequest request) {
-        log.info("Iniciando registro de solicitud de préstamo para el usuario: {}", request.getUserId());
+            @Valid @RequestBody CreateLoanApplicationRequest request, Authentication authentication) {
+        String authenticatedUserId = authentication.getName();
+        log.info("Iniciando registro de solicitud de préstamo para el usuario: {}", authenticatedUserId);
 
         return Mono.just(request)
-                .map(loanApplicationRestMapper::toDomain)
-                .flatMap(createLoanApplicationUseCase::createNewLoanApplication)
+                .map(req -> loanApplicationRestMapper.toDomain(req, authenticatedUserId))
+                .flatMap(application -> createLoanApplicationUseCase.createNewLoanApplication(application,authenticatedUserId))
                 .map(loanApplicationRestMapper::toResponse)
                 .doOnSuccess(response -> log.info("Solicitud registrada con ID: {}", response.getId()))
-                .doOnError(error -> log.error("Error al registrar solicitud para el usuario {}: {}", request.getUserId(), error.getMessage()));
+                .doOnError(error -> log.error("Error al registrar solicitud para el usuario {}: {}", authenticatedUserId, error.getMessage()));
     }
 }

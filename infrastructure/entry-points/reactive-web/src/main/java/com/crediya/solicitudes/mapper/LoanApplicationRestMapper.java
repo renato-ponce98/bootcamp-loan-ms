@@ -8,11 +8,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface LoanApplicationRestMapper {
-
+    @Mapping(target = "userId", source = "authenticatedUserId")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "statusId", ignore = true)
     @Mapping(target = "applicationDate", ignore = true)
-    LoanApplication toDomain(CreateLoanApplicationRequest request);
+    LoanApplication toDomain(CreateLoanApplicationRequest request, String authenticatedUserId);
 
     @Mapping(target = "message", constant = "Solicitud de préstamo registrada exitosamente.")
     CreateLoanApplicationResponse toResponse(LoanApplication loanApplication);

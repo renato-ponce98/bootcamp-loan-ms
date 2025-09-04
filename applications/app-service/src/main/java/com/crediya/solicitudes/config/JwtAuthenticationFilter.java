@@ -17,6 +17,8 @@ import reactor.core.publisher.Mono;
 import java.util.Collections;
 import java.util.List;
 
+import static com.crediya.solicitudes.model.security.SecurityContextKey.TOKEN_CONTEXT_KEY;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -33,11 +35,13 @@ public class JwtAuthenticationFilter implements WebFilter {
 
         return tokenValidator.validateToken(token)
                 .flatMap(authenticatedUser -> {
-                    log.info("Token validado. Usuario extraído: userId={}, role={}",
-                            authenticatedUser.getUserId(), authenticatedUser.getRole());
+                    log.info("Token validado. Usuario extraído: userId={}, role={}", authenticatedUser.getUserId(), authenticatedUser.getRole());
                     List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(authenticatedUser.getRole()));
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authenticatedUser.getUserId(), null, authorities);
-                    return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+
+                    return chain.filter(exchange)
+                            .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
+                            .contextWrite(context -> context.put(TOKEN_CONTEXT_KEY, token));
                 })
                 .switchIfEmpty(chain.filter(exchange));
     }

@@ -3,12 +3,11 @@ package com.crediya.solicitudes.usecase.createloanapplication;
 import com.crediya.solicitudes.model.loanapplication.LoanApplication;
 import com.crediya.solicitudes.model.loanapplication.gateways.LoanApplicationRepository;
 import com.crediya.solicitudes.model.loantype.gateways.LoanTypeRepository;
-import com.crediya.solicitudes.model.user.gateways.UserRepository;
 import com.crediya.solicitudes.usecase.exceptions.InvalidLoanTypeException;
-import com.crediya.solicitudes.usecase.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor

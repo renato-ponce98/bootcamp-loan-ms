@@ -13,6 +13,12 @@ public class LoanTypeEntity {
     @Id
     private Long id;
     private String name;
+    @Column("min_amount")
+    private BigDecimal minAmount;
+    @Column("max_amount")
+    private BigDecimal maxAmount;
     @Column("interest_rate")
     private BigDecimal interestRate;
+    @Column("automatic_validation")
+    private Boolean automaticValidation;
 }

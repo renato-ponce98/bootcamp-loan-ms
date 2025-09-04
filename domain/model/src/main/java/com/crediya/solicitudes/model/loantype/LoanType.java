@@ -1,14 +1,18 @@
 package com.crediya.solicitudes.model.loantype;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-//import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-//@NoArgsConstructor
+import java.math.BigDecimal;
+
+
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class LoanType {
+    private Long id;
+    private String name;
+    private BigDecimal minAmount;
+    private BigDecimal maxAmount;
+    private BigDecimal interestRate;
+    private Boolean automaticValidation;
 }

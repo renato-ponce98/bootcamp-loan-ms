@@ -10,7 +10,10 @@
     CREATE TABLE loan_types (
         id BIGSERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        interest_rate NUMERIC(5, 2) NOT NULL
+        min_amount NUMERIC(12, 2) NOT NULL,
+        max_amount NUMERIC(12, 2) NOT NULL,
+        interest_rate NUMERIC(5, 2) NOT NULL,
+        automatic_validation BOOLEAN NOT NULL DEFAULT false
     );
 
     CREATE TABLE loan_applications (
@@ -23,10 +26,10 @@
         application_date TIMESTAMP NOT NULL
     );
 
-    INSERT INTO statuses (id, name) VALUES (1, 'PENDING_REVIEW');
-    INSERT INTO statuses (id, name) VALUES (2, 'APPROVED');
-    INSERT INTO statuses (id, name) VALUES (3, 'REJECTED');
+    INSERT INTO statuses (id, name) VALUES (1, 'PENDIENTE_REVISION');
+    INSERT INTO statuses (id, name) VALUES (2, 'APROBADO');
+    INSERT INTO statuses (id, name) VALUES (3, 'RECHAZADO');
 
-    INSERT INTO loan_types (id, name, interest_rate) VALUES (1, 'Personal Loan', 12.50);
-    INSERT INTO loan_types (id, name, interest_rate) VALUES (2, 'Mortgage Loan', 5.75);
-    INSERT INTO loan_types (id, name, interest_rate) VALUES (3, 'Car Loan', 8.20);
+    INSERT INTO loan_types (id, name, min_amount, max_amount, interest_rate, automatic_validation) VALUES (1, 'Personal Loan', 1000.00, 50000.00, 12.50, true);
+    INSERT INTO loan_types (id, name, min_amount, max_amount, interest_rate, automatic_validation) VALUES (2, 'Mortgage Loan', 50001.00, 500000.00, 5.75, false);
+    INSERT INTO loan_types (id, name, min_amount, max_amount, interest_rate, automatic_validation) VALUES (3, 'Car Loan', 5000.00, 80000.00, 8.20, true);

@@ -25,8 +25,10 @@ adapters:
       schema: "public"
   entry-points:
     rest-consumer:
-      authentication-service:
+      user-detail:
         url: http://localhost:8080
+      authentication-service:
+        url: "http://localhost:8080"
 management:
   endpoints:
     web:
@@ -46,7 +48,7 @@ springdoc:
 adapter:
   restconsumer:
     timeout: 5000
-    url: "http://localhost:8081"
+    url: "http://localhost:8080"
 jwt:
   secret: "EsteEsUnSecretoSuperLargoYComplejoParaCrediYaQueDebeSerCambiadoEnProduccion12345"
   expiration-ms: 3600000

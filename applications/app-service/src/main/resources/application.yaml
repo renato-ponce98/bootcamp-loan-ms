@@ -17,18 +17,18 @@ spring:
 adapters:
   driven:
     r2dbc:
-      host: "localhost"
+      host: db-loan
       port: 5432
-      database: "crediya_loan_db"
-      username: "rponce"
-      password: null
+      database: crediya_loan_db
+      username: admin
+      password: admin
       schema: "public"
   entry-points:
     rest-consumer:
       user-detail:
-        url: http://localhost:8080
+        url: http://autenticacion-ms:8080
       authentication-service:
-        url: "http://localhost:8080"
+        url: "http://autenticacion-ms:8080"
 management:
   endpoints:
     web:

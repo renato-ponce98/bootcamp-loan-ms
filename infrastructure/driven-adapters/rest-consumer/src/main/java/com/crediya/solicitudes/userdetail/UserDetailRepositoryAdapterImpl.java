@@ -4,7 +4,6 @@ import com.crediya.solicitudes.model.userdetail.UserDetail;
 import com.crediya.solicitudes.model.userdetail.gateways.UserDetailRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;

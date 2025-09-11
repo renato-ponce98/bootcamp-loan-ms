@@ -29,6 +29,7 @@
     INSERT INTO statuses (id, name) VALUES (1, 'PENDIENTE_REVISION');
     INSERT INTO statuses (id, name) VALUES (2, 'APROBADO');
     INSERT INTO statuses (id, name) VALUES (3, 'RECHAZADO');
+    INSERT INTO statuses (id, name) VALUES (4, 'REVISION_MANUAL');
 
     INSERT INTO loan_types (id, name, min_amount, max_amount, interest_rate, automatic_validation) VALUES (1, 'Personal Loan', 1000.00, 50000.00, 12.50, true);
     INSERT INTO loan_types (id, name, min_amount, max_amount, interest_rate, automatic_validation) VALUES (2, 'Mortgage Loan', 50001.00, 500000.00, 5.75, false);

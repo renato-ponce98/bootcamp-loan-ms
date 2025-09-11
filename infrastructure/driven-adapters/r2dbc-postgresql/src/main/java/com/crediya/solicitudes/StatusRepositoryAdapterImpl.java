@@ -29,4 +29,9 @@ public class StatusRepositoryAdapterImpl implements StatusRepository {
         return repository.findById(id)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public Mono<Status> findByName(String name) {
+        return repository.findByName(name).map(mapper::toDomain);
+    }
 }

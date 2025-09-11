@@ -41,7 +41,7 @@ public class GetLoanApplicationsForReviewUseCase {
                 .flatMap(this::enrichApplicationWithDetails);
     }
 
-    private Mono<LoanApplicationDetail> enrichApplicationWithDetails(LoanApplication application) {
+    public Mono<LoanApplicationDetail> enrichApplicationWithDetails(LoanApplication application) {
         Mono<UserDetail> userDetailMono = userDetailRepository.findByIdentityDocument(application.getUserId())
                 .defaultIfEmpty(UserDetail.builder().build());
         Mono<BigDecimal> totalMonthlyDebtMono = calculateTotalMonthlyDebt(application.getUserId());

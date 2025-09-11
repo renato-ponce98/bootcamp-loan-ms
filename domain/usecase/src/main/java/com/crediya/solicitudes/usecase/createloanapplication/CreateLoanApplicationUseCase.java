@@ -1,7 +1,9 @@
 package com.crediya.solicitudes.usecase.createloanapplication;
 
+import com.crediya.solicitudes.model.autovalidationevent.gateways.AutoValidationEventGateway;
 import com.crediya.solicitudes.model.loanapplication.LoanApplication;
 import com.crediya.solicitudes.model.loanapplication.gateways.LoanApplicationRepository;
+import com.crediya.solicitudes.model.loantype.LoanType;
 import com.crediya.solicitudes.model.loantype.gateways.LoanTypeRepository;
 import com.crediya.solicitudes.usecase.exceptions.InvalidLoanTypeException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class CreateLoanApplicationUseCase {
 
     private final LoanApplicationRepository loanApplicationRepository;
     private final LoanTypeRepository loanTypeRepository;
+    private final AutoValidationEventGateway autoValidationEventGateway;
 
     public Mono<LoanApplication> createNewLoanApplication(LoanApplication loanApplication, String authenticatedUserId) {
 
@@ -29,22 +32,30 @@ public class CreateLoanApplicationUseCase {
         }
 
         return validateLoanType(loanApplication.getLoanTypeId())
-                .flatMap(isValid -> {
+                .flatMap(loanType -> {
                     LoanApplication applicationToSave = loanApplication.toBuilder()
                             .statusId(PENDING_STATUS_ID)
                             .applicationDate(LocalDateTime.now())
                             .build();
-                    return loanApplicationRepository.save(applicationToSave);
+
+                    return loanApplicationRepository.save(applicationToSave)
+                            .flatMap(savedApplication ->
+                                    publishToAutoValidationQueueIfRequired(savedApplication, loanType)
+                            );
                 });
     }
 
-    private Mono<Boolean> validateLoanType(Long loanTypeId) {
-        return loanTypeRepository.existsById(loanTypeId)
-                .flatMap(exists -> {
-                    if (Boolean.FALSE.equals(exists)) {
-                        return Mono.error(new InvalidLoanTypeException("El tipo de préstamo con ID " + loanTypeId + " no es válido."));
-                    }
-                    return Mono.just(true);
-                });
+    private Mono<LoanType> validateLoanType(Long loanTypeId) {
+        return loanTypeRepository.findById(loanTypeId)
+                .switchIfEmpty(Mono.error(new InvalidLoanTypeException("El tipo de préstamo con ID " + loanTypeId + " no es válido.")));
+    }
+
+    private Mono<LoanApplication> publishToAutoValidationQueueIfRequired(LoanApplication savedApplication, LoanType loanType) {
+        if (loanType.getAutomaticValidation()) {
+            return autoValidationEventGateway.publishForAutoValidation(savedApplication)
+                    .thenReturn(savedApplication);
+        } else {
+            return Mono.just(savedApplication);
+        }
     }
 }

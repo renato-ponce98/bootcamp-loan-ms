@@ -3,11 +3,14 @@ package com.crediya.solicitudes.api;
 import com.crediya.solicitudes.dto.CreateLoanApplicationRequest;
 import com.crediya.solicitudes.dto.CreateLoanApplicationResponse;
 import com.crediya.solicitudes.dto.ErrorResponse;
+import com.crediya.solicitudes.dto.UpdateStatusRequest;
 import com.crediya.solicitudes.mapper.LoanApplicationRestMapper;
 import com.crediya.solicitudes.model.common.Pagination;
+import com.crediya.solicitudes.model.loanapplication.LoanApplication;
 import com.crediya.solicitudes.model.loanapplication.LoanApplicationDetail;
 import com.crediya.solicitudes.usecase.createloanapplication.CreateLoanApplicationUseCase;
 import com.crediya.solicitudes.usecase.getloanapplicationsforreview.GetLoanApplicationsForReviewUseCase;
+import com.crediya.solicitudes.usecase.updateloanapplicationstatus.UpdateLoanApplicationStatusUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,6 +41,7 @@ public class LoanApplicationController {
 
     private final CreateLoanApplicationUseCase createLoanApplicationUseCase;
     private final GetLoanApplicationsForReviewUseCase getLoanApplicationsForReviewUseCase;
+    private final UpdateLoanApplicationStatusUseCase updateLoanApplicationStatusUseCase;
     private final LoanApplicationRestMapper loanApplicationRestMapper;
 
     @PostMapping(path = "/solicitud")
@@ -109,5 +113,25 @@ public class LoanApplicationController {
                 .map(list -> ResponseEntity.ok().body(list))
                 .doOnSuccess(response -> log.info("Búsqueda de solicitudes completada. Se encontraron {} resultados.", response.getBody() != null ? response.getBody().size() : 0))
                 .doOnError(error -> log.error("Error al buscar solicitudes para revisión", error));
+    }
+
+    @PutMapping(path = "/solicitud/{id}/estado")
+    @PreAuthorize("hasRole('ASESOR')")
+    @Operation(
+            summary = "Actualizar el estado de una solicitud de préstamo",
+            description = "Permite a un asesor aprobar o rechazar una solicitud de préstamo.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Estado actualizado exitosamente"),
+                    @ApiResponse(responseCode = "400", description = "Transición de estado inválida o solicitud no encontrada")
+            }
+    )
+    public Mono<LoanApplication> updateStatus(
+            @Parameter(description = "ID de la solicitud a actualizar") @PathVariable("id") Long id,
+            @Valid @RequestBody UpdateStatusRequest request) {
+        log.info("Iniciando actualización de estado para la solicitud ID: {} al nuevo estado: {}", id, request.getNewStatus());
+
+        return updateLoanApplicationStatusUseCase.updateStatus(id, request.getNewStatus())
+                .doOnSuccess(app -> log.info("Estado de la solicitud ID: {} actualizado a {}", app.getId(), request.getNewStatus()))
+                .doOnError(error -> log.error("Error al actualizar estado de la solicitud ID: {}", id, error));
     }
 }

@@ -17,16 +17,20 @@ spring:
 adapters:
   driven:
     r2dbc:
-      host: db-loan
+      host: "db-loan"
       port: 5432
-      database: crediya_loan_db
-      username: admin
-      password: admin
+      database: "crediya_loan_db"
+      username: "${DB_USER}"
+      password: "${DB_PASSWORD}"
       schema: "public"
+    sqs:
+      region: ${AWS_REGION}
+      queue-url: ${SQS_QUEUE_URL}
+      queue-url-autovalidate: ${SQS_AUTO_VALIDATION_QUEUE_URL}
   entry-points:
     rest-consumer:
       user-detail:
-        url: http://autenticacion-ms:8080
+        url: "http://autenticacion-ms:8080"
       authentication-service:
         url: "http://autenticacion-ms:8080"
 management:
@@ -42,13 +46,16 @@ management:
     circuitbreakers:
       enabled: true
 cors:
-  allowed-origins: "http://localhost:4200,http://localhost:8081"
+  allowed-origins: "http://localhost:4200,http://solicitudes-ms:8081"
 springdoc:
   paths-to-match: "/api/**"
 adapter:
   restconsumer:
     timeout: 5000
-    url: "http://localhost:8080"
+    url: "http://autenticacion-ms:8080"
+  sqs:
+    region: "us-east-1"
+    queueUrl: ${SQS_QUEUE_URL}
 jwt:
   secret: "EsteEsUnSecretoSuperLargoYComplejoParaCrediYaQueDebeSerCambiadoEnProduccion12345"
   expiration-ms: 3600000

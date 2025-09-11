@@ -9,4 +9,5 @@ import java.util.List;
 public interface StatusRepository {
     Flux<Status> findByNameIn(List<String> names);
     Mono<Status> findById(Long id);
+    Mono<Status> findByName(String name);
 }

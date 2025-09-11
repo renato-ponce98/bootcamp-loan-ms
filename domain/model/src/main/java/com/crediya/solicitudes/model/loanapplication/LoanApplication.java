@@ -16,4 +16,5 @@ public class LoanApplication {
     private BigDecimal amount;
     private Integer term;
     private LocalDateTime applicationDate;
+    private BigDecimal interestRate;
 }

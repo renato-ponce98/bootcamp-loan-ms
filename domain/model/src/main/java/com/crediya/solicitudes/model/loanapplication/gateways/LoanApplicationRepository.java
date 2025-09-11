@@ -11,4 +11,5 @@ public interface LoanApplicationRepository {
     Mono<LoanApplication> save(LoanApplication loanApplication);
     Flux<LoanApplication> findAllByStatusIdIn(List<Long> statusIds, Pagination pageable);
     Flux<LoanApplication> findAllByUserIdAndStatusName(String userId, String statusName);
+    Mono<LoanApplication> findById(Long id);
 }

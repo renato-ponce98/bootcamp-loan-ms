@@ -40,4 +40,9 @@ public class LoanApplicationRepositoryAdapterImpl implements LoanApplicationRepo
         return repository.findAllByUserIdAndStatusName(userId, statusName)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public Mono<LoanApplication> findById(Long id) {
+        return repository.findById(id).map(mapper::toDomain);
+    }
 }
